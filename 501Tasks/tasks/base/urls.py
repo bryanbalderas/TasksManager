@@ -16,7 +16,5 @@ urlpatterns = [
     path('task-update/<int:pk>/',TaskUpdate.as_view(),name='task-update'),
     path('task-delete/<int:pk>/',DeleteView.as_view(),name='task-delete'),
     path('task-all/',TaskAllList.as_view(),name='task-all'),
-]
+]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
