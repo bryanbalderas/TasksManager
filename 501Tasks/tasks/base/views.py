@@ -1,8 +1,14 @@
 from django.shortcuts import redirect, render
 from django.views.generic.list import ListView
+from django.urls import reverse
+from django.template import RequestContext
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, FormView, UpdateView
 from django.urls import reverse_lazy
+
+from django.http import HttpResponseRedirect
+from .forms import UploadFileForm
+from .fileUpload import handle_uploaded_file
 
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -57,6 +63,21 @@ class TaskList(LoginRequiredMixin,ListView):
 
         return context
         
+def upload_file(request, pk:int):
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            newdoc=Task(archivos=request.FILES['docfile'])
+            newdoc.save()
+            
+            return HttpResponseRedirect(reverse('base.views.upload_file'))
+        else:
+            form = UploadFileForm()
+    
+    documents = Task.objects.all()
+    
+    return render(request,'base/task_detail.html')
+
 
 
 class TaskDetail(LoginRequiredMixin,DetailView):
@@ -67,7 +88,7 @@ class TaskDetail(LoginRequiredMixin,DetailView):
     
 class TaskCreate(LoginRequiredMixin,CreateView):
     model = Task
-    fields = '__all__'
+    fields = ['user','title','description','complete','Estatus','Departamento']
     success_url = reverse_lazy('tasks')
     
     #def form_invalid(self, form):
@@ -76,7 +97,7 @@ class TaskCreate(LoginRequiredMixin,CreateView):
     
 class TaskUpdate(LoginRequiredMixin,UpdateView):
     model = Task
-    fields = '__all__'
+    fields = ['user','title','description','complete','Estatus','Departamento','archivos']
     success_url = reverse_lazy('tasks')
     
 class DeleteView(LoginRequiredMixin,DeleteView):

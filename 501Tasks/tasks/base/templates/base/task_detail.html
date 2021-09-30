@@ -1,6 +1,31 @@
 {% extends 'base/main.html' %}
 {% block content%}
 
-<h1>Tarea: {{task}}</h1>
+<form method="post" enctype="multipart/form-data">
 
+<h1>Tarea: {{documents}}</h1>
+
+{% if documents %}
+    <ul>
+    {% for document in documents %}
+        <li><a href="{{ document.docfile.url }}">{{ document.docfile.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No documents.</p>
+{% endif %}
+
+<div class="card-body">
+    <h3>Detalles de Tarea</h3>
+    <form action="{% url 'task_detail' %}" method="post" encrypte="multipart/form-data">
+        {% csrf_token %}
+        <p>{{form.non_field_errors}}</p>
+        <p>{{form.docfile.label_tag}} {{form.docfile.help_text}}</p>
+        <p>
+            {{form.docfile.erros}}
+            {{form.docfile}}
+        </p>
+        <p><input type="submit" value="Upload" /></p>
+    </form>
+</div>
 {% endblock content%}
